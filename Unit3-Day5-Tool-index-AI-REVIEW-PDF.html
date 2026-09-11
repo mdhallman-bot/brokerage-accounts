@@ -130,6 +130,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 </main>
 <script>
 const FIELDS=["liq","rh1","rh2","rh3","rh4","rh5","rh6","rhsyn","costprice","costown","costnote","vtiprice","vtiown","vtinote","fxprice","fxown","fxnote","divanswer","fullshare","previewreflection","portreflection","hab1","hab2","hab3","hab4","vest9","vest9amt","pensioncalc","pensionlesson","exit","exit2"];
+const WEB_APP_URL="https://script.google.com/macros/s/AKfycbwfUWSHIgEATBA7l4DpHvE9O-5W0ps5fDy4cTpXBu2N_jNPRcwz_dFJa1hG9UBbgCU/exec";
 const $=id=>document.getElementById(id);
 let trades=[], available=1000, previewData=null, saveTimer=null, activeCode="", reviewData=null, reviewFingerprint="";
 
@@ -152,7 +153,20 @@ function setStatus(msg,kind=""){
   $("savemsg").textContent=msg;
   $("savemsg").style.color=kind==="bad"?"#a12622":kind==="good"?"#176b34":"#5c6875";
 }
-function hasServer(){return typeof google!=="undefined" && google.script && google.script.run}
+function hasServer(){return true}
+function apiCall(action,payload){
+  return new Promise((resolve,reject)=>{
+    const cb="u3d5cb_"+Date.now()+"_"+Math.floor(Math.random()*100000);
+    const script=document.createElement("script");
+    const timer=setTimeout(()=>{cleanup();reject(new Error("Request timed out."))},20000);
+    function cleanup(){clearTimeout(timer);try{delete window[cb]}catch(e){};script.remove()}
+    window[cb]=data=>{cleanup();if(data&&data.error)reject(new Error(data.error));else resolve(data)};
+    const params=new URLSearchParams({action,callback:cb,payload:JSON.stringify(payload||{})});
+    script.src=WEB_APP_URL+"?"+params.toString();
+    script.onerror=()=>{cleanup();reject(new Error("Could not reach the class web app."))};
+    document.body.appendChild(script);
+  });
+}
 function localSave(){
   if(!activeCode) return;
   localStorage.setItem(localKey(activeCode),JSON.stringify(collectState()));
@@ -167,13 +181,12 @@ function saveNow(){
   const payload=collectState();
   if(!hasServer()){setStatus("Saved local backup on this device. Server save is available after deployment in Google Apps Script.","good");return}
   setStatus("Saving…");
-  google.script.run
-    .withSuccessHandler(r=>{
+  apiCall("save_state",{studentCode:activeCode,state:payload})
+    .then(r=>{
       if(r && r.ok) setStatus("Saved to class tool at "+(r.savedAt||"just now")+".","good");
       else setStatus("Local backup saved, but class-tool save failed. Try Save Now again.","bad");
     })
-    .withFailureHandler(()=>setStatus("Local backup saved, but class-tool save failed. Try Save Now again.","bad"))
-    .saveState(activeCode,payload);
+    .catch(()=>setStatus("Local backup saved, but class-tool save failed. Try Save Now again.","bad"));
 }
 function autosave(){
   if(!activeCode) return;
@@ -193,13 +206,12 @@ function loadStudent(){
     setStatus("Local backup is active. When deployed through Apps Script, work will also save to the class sheet.","good");
     return;
   }
-  google.script.run
-    .withSuccessHandler(r=>{
+  apiCall("load_state",{studentCode:code})
+    .then(r=>{
       if(r && r.ok && r.found && r.state){applyState(r.state); localSave(); $("idmsg").textContent=" Loaded saved work."; setStatus("Saved work retrieved from the class tool.","good")}
       else { $("idmsg").textContent=backup?" Loaded local backup.":" New student record started."; saveNow(); }
     })
-    .withFailureHandler(()=>{$("idmsg").textContent=backup?" Loaded local backup; server unavailable.":" Server unavailable; local backup active.";setStatus("Keep working. A local backup is active; use Save Now before leaving.","bad")})
-    .loadState(code);
+    .catch(()=>{$("idmsg").textContent=backup?" Loaded local backup; server unavailable.":" Server unavailable; local backup active.";setStatus("Keep working. A local backup is active; use Save Now before leaving.","bad")});
 }
 function pick(el,id,ok){
   [...el.parentNode.querySelectorAll(".choice")].forEach(x=>x.classList.remove("selected"));el.classList.add("selected");
@@ -299,8 +311,8 @@ function submitForReview(){
   }
   if(!hasServer()){$("reviewStatus").textContent=" AI review works in the deployed Apps Script version.";return}
   $("reviewBtn").disabled=true; $("pdfBtn").disabled=true; $("reviewStatus").textContent=" Reviewing…";
-  google.script.run
-    .withSuccessHandler(r=>{
+  apiCall("review_final",{studentCode:activeCode,response:{finalExplanation:finalText,fundedCheck:checkText}})
+    .then(r=>{
       $("reviewBtn").disabled=false;
       if(!r || !r.ok){$("reviewStatus").textContent=" Review could not be completed. Try again.";return}
       reviewData={feedback:r.feedback||"Review completed.",reviewedAt:r.reviewedAt||""};
@@ -308,8 +320,7 @@ function submitForReview(){
       $("reviewStatus").textContent=" Review complete.";
       renderReview(); saveNow();
     })
-    .withFailureHandler(()=>{$("reviewBtn").disabled=false;$("reviewStatus").textContent=" Review could not be completed. Try again."})
-    .reviewFinal(activeCode,{finalExplanation:finalText,fundedCheck:checkText});
+    .catch(()=>{$("reviewBtn").disabled=false;$("reviewStatus").textContent=" Review could not be completed. Try again."});
 }
 function pdfLines(){
   const c=completionInfo(), lines=[];
@@ -342,8 +353,8 @@ function downloadPdf(){
   if(!hasServer()){alert("PDF download works in the deployed Apps Script version.");return}
   $("pdfBtn").disabled=true; $("pdfNote").textContent="Building PDF…";
   const report=pdfLines();
-  google.script.run
-    .withSuccessHandler(r=>{
+  apiCall("build_pdf",{studentCode:activeCode,report:report})
+    .then(r=>{
       renderReview();
       if(!r || !r.ok || !r.base64){alert("PDF could not be created. Please try again.");return}
       const a=document.createElement("a");
@@ -351,8 +362,7 @@ function downloadPdf(){
       a.download=r.filename||("Unit3-Day5-"+activeCode+".pdf");
       document.body.appendChild(a);a.click();a.remove();
     })
-    .withFailureHandler(()=>{renderReview();alert("PDF could not be created. Please try again.")})
-    .buildPdf(activeCode,report);
+    .catch(()=>{renderReview();alert("PDF could not be created. Please try again.")});
 }
 
 window.addEventListener("beforeunload",()=>localSave());

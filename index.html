@@ -69,6 +69,9 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <div class="card"><div class="step">Fractional shares</div><h2>You have only $100</h2>
 <p>Look at the COST price you recorded. Can $100 buy one full share?</p><select id="fullshare" onchange="autosave()"><option></option><option>No</option><option>Yes</option></select>
 <div class="callout"><b>Fractional share:</b> part of one full share. Some brokerages allow eligible investments to be purchased by dollar amount rather than requiring a whole share.</div>
+<div class="note"><b>Calculate it:</b> $100 ÷ today's COST share price = fraction of one share you could buy.</div>
+<label for="fracwork"><b>Show your calculation</b></label>
+<input id="fracwork" placeholder="Example: 100 ÷ 950 = 0.1053 share" oninput="autosave()">
 <div id="fracout" class="callout">Enter today's COST price above to calculate what fraction $100 could buy.</div></div>
 
 <div class="card practice"><div class="practicehead"><h2>CLASSROOM PRACTICE BROKERAGE</h2><p>NOT A REAL FINANCIAL ACCOUNT • FICTIONAL CASH ONLY</p></div>
@@ -91,6 +94,13 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <p>After placing an order, what changed in your practice portfolio?</p><textarea id="portreflection" oninput="autosave()"></textarea></div>
 
 <div class="card"><div class="step">Step 6</div><h2>What happens after you buy?</h2>
+<p>Investing is not finished after the first purchase. Use these four terms to identify what each investor is doing.</p>
+<div class="grid2">
+<div class="callout"><b>Dollar-cost averaging:</b> investing the same dollar amount on a regular schedule, whether prices are up or down.</div>
+<div class="callout"><b>Dividend reinvestment:</b> using dividends to automatically purchase additional shares instead of taking the dividend as cash.</div>
+<div class="callout"><b>Rebalancing:</b> adjusting investments to move a portfolio back toward its intended mix after market changes shift the percentages.</div>
+<div class="callout"><b>Target-date fund:</b> a diversified fund designed around an approximate retirement year that generally becomes more conservative as that year approaches.</div>
+</div>
 <table><tr><th>Scenario</th><th>Habit</th></tr>
 <tr><td>Maya automatically invests $25 from every paycheck whether the market is up or down.</td><td><select id="hab1" onchange="autosave()"><option></option><option>Dollar-cost averaging</option><option>Dividend reinvestment</option><option>Rebalancing</option><option>Target-date fund</option></select></td></tr>
 <tr><td>Luis receives a $4 dividend and automatically uses it to buy more shares.</td><td><select id="hab2" onchange="autosave()"><option></option><option>Dollar-cost averaging</option><option>Dividend reinvestment</option><option>Rebalancing</option><option>Target-date fund</option></select></td></tr>
@@ -117,7 +127,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 
 <div class="reviewbox">
 <h3>Submit for Review</h3>
-<p>The AI coach will check whether your final explanation accurately explains the process and uses the required ideas in context. It will give brief feedback; it will not change your answers.</p>
+<p>The AI coach will check whether your final explanation accurately explains the process and uses the required ideas in context. It will give brief feedback; it will not change your answers.</p><p class="small"><b>Teacher test note:</b> if review fails, the message beside the button will now show the actual backend error so setup problems can be identified.</p>
 <button type="button" id="reviewBtn" onclick="submitForReview()">Submit for Review</button>
 <span id="reviewStatus" class="small"></span>
 <div id="reviewResult" style="display:none;margin-top:12px"></div>
@@ -129,7 +139,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <p id="savemsg" class="small">Your work autosaves to the class tool after you enter your class code. A local backup is also kept on this device.</p></div>
 </main>
 <script>
-const FIELDS=["liq","rh1","rh2","rh3","rh4","rh5","rh6","rhsyn","costprice","costown","costnote","vtiprice","vtiown","vtinote","fxprice","fxown","fxnote","divanswer","fullshare","previewreflection","portreflection","hab1","hab2","hab3","hab4","vest9","vest9amt","pensioncalc","pensionlesson","exit","exit2"];
+const FIELDS=["liq","rh1","rh2","rh3","rh4","rh5","rh6","rhsyn","costprice","costown","costnote","vtiprice","vtiown","vtinote","fxprice","fxown","fxnote","divanswer","fullshare","fracwork","previewreflection","portreflection","hab1","hab2","hab3","hab4","vest9","vest9amt","pensioncalc","pensionlesson","exit","exit2"];
 const WEB_APP_URL="https://script.google.com/macros/s/AKfycbwfUWSHIgEATBA7l4DpHvE9O-5W0ps5fDy4cTpXBu2N_jNPRcwz_dFJa1hG9UBbgCU/exec";
 const $=id=>document.getElementById(id);
 let trades=[], available=1000, previewData=null, saveTimer=null, activeCode="", reviewData=null, reviewFingerprint="";
@@ -282,7 +292,7 @@ function completionInfo(){
   add("VTI research", ["vtiprice","vtiown","vtinote"].every(id=>textVal(id)!==""));
   add("FXAIX research", ["fxprice","fxown","fxnote"].every(id=>textVal(id)!==""));
   add("Diversification response", textVal("divanswer")!=="");
-  add("Fractional-share question", textVal("fullshare")!=="");
+  add("Fractional-share question + calculation", textVal("fullshare")!=="" && textVal("fracwork")!=="");
   add("Practice COST order", trades.some(t=>t.symbol==="COST"));
   add("Practice VTI order", trades.some(t=>t.symbol==="VTI"));
   add("Practice reflections", textVal("previewreflection")!=="" && textVal("portreflection")!=="");
@@ -320,7 +330,7 @@ function submitForReview(){
       $("reviewStatus").textContent=" Review complete.";
       renderReview(); saveNow();
     })
-    .catch(()=>{$("reviewBtn").disabled=false;$("reviewStatus").textContent=" Review could not be completed. Try again."});
+    .catch(err=>{$("reviewBtn").disabled=false;$("reviewStatus").textContent=" Review could not be completed: "+(err&&err.message?err.message:"Unknown error");});
 }
 function pdfLines(){
   const c=completionInfo(), lines=[];

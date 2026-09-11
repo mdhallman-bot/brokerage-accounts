@@ -19,14 +19,15 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 .scorepill{display:inline-block;background:var(--navy);color:#fff;border-radius:999px;padding:6px 11px;font-weight:800}
 #pdfBtn:disabled{background:#9aa6b2;color:#eef1f4;opacity:1;cursor:not-allowed}
 @media(max-width:700px){.grid2{grid-template-columns:1fr}}
-</style></head>
+.lessonLocked{position:relative;pointer-events:none;user-select:none;opacity:.48}.lessonLocked::after{content:"Enter your class code above and click Load / Start to begin.";position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;padding-top:24px;background:rgba(245,247,250,.72);font-weight:800;color:#18324a;text-align:center;border-radius:12px;z-index:20}</style></head>
 <body><header><div class="wrap"><h1>How Do I Actually Start Investing?</h1><p>SAFETY → ACCOUNT → BROKERAGE → FUND → RESEARCH → PREVIEW → BUY → KEEP GOING</p></div></header>
 <div class="progress">Classroom practice only • no real account • no real money • no personal financial information</div><main>
 
 <div class="card"><div class="step">Start</div><h2>Class code</h2><p>Enter your teacher-assigned pseudonym/code. Do not enter your real name.</p>
+<div class="note"><b>Start here:</b> Enter your class code and click <b>Load / Start</b>. The rest of the assignment will unlock only after your student record is started.</div>
 <input id="sid" maxlength="30" placeholder="Class code"><button onclick="loadStudent()">Load / Start</button><span id="idmsg" class="small"></span></div>
 
-<div class="card"><div class="step">Step 0</div><h2>Build financial safety first</h2>
+<div class="card lessonSection lessonLocked"><div class="step">Step 0</div><h2>Build financial safety first</h2>
 <div class="callout"><b>Emergency fund:</b> money set aside for unexpected expenses. It should be safe and easy to access.</div>
 <p>You are 16 and have $500 from a summer job. Why is keeping some money in an emergency fund recommended before investing all $500?</p>
 <div class="choice" onclick="pick(this,'emfb',false)">Investments always lose money in the short term.</div>
@@ -35,13 +36,13 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <p><b>Liquidity</b> = how quickly/easily something can become usable cash without a major loss in value. Which is generally more liquid?</p>
 <select id="liq" onchange="autosave()"><option></option><option>Cash in a savings account</option><option>A house</option></select></div>
 
-<div class="card"><div class="step">Step 1</div><h2>What is a brokerage?</h2>
+<div class="card lessonSection lessonLocked"><div class="step">Step 1</div><h2>What is a brokerage?</h2>
 <div class="callout"><b>Brokerage:</b> a company that provides an account and the tools/access needed to buy, sell, and hold investments.</div>
 <p>You generally do not send your money directly to a company every time you want to buy a share. A brokerage connects investors to markets and keeps track of the investments held in the account.</p>
 <div class="grid2"><div class="callout"><b>ACCOUNT = container</b><br>Brokerage account, 401(k), IRA/Roth IRA</div><div class="callout"><b>INVESTMENT = contents</b><br>Stock, bond, ETF, mutual fund</div></div>
 <p>Because you are under 18, an adult generally needs to be involved. The exact teen/custodial structure depends on the brokerage.</p></div>
 
-<div class="card"><div class="step">Step 2</div><h2>Real brokerage website field trip</h2>
+<div class="card lessonSection lessonLocked"><div class="step">Step 2</div><h2>Real brokerage website field trip</h2>
 <div class="note"><b>Sample, not endorsement:</b> The class is using Robinhood's public website as one easy-to-follow example of what a brokerage offers. This is <b>not</b> a recommendation of Robinhood over Fidelity, Schwab, Vanguard, E*TRADE, Merrill, or any other brokerage.</div>
 <a class="btn" target="_blank" rel="noopener" href="https://robinhood.com/us/en/invest/">Open the sample brokerage page</a>
 <p>Spend about 5–7 minutes exploring. Return here and record what you find.</p>
@@ -54,11 +55,11 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <tr><td>One service you did not know brokerages might offer</td><td><input id="rh6" oninput="autosave()"></td></tr></table>
 <p><b>So what does a brokerage actually do for an investor?</b></p><textarea id="rhsyn" oninput="autosave()"></textarea></div>
 
-<div class="card"><div class="step">Step 3</div><h2>Fund the account</h2>
+<div class="card lessonSection lessonLocked"><div class="step">Step 3</div><h2>Fund the account</h2>
 <p>You transfer money from checking into a brokerage account. Are you invested yet?</p>
 <button onclick="fund(false)">Yes</button><button onclick="fund(true)">No</button><div id="fundfb" class="feedback"></div></div>
 
-<div class="card"><div class="step">Steps 4–5</div><h2>Research three real investments</h2>
+<div class="card lessonSection lessonLocked"><div class="step">Steps 4–5</div><h2>Research three real investments</h2>
 <p>Use the live pages. Record what you see <b>today</b>; market prices change.</p>
 <table><tr><th>Investment</th><th>Live research</th><th>Current price / NAV</th><th>What do you own?</th><th>Diversification / fee note</th></tr>
 <tr><td><b>COST</b><br>Costco stock</td><td><a class="btn out" target="_blank" rel="noopener" href="https://digital.fidelity.com/prgw/digital/research/quote/dashboard/summary?symbol=COST">Research COST</a></td><td><input id="costprice" type="number" step=".01" oninput="calcFraction();autosave()"></td><td><input id="costown" oninput="autosave()"></td><td><input id="costnote" oninput="autosave()"></td></tr>
@@ -66,7 +67,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <tr><td><b>FXAIX</b><br>Fidelity 500 Index Fund</td><td><a class="btn out" target="_blank" rel="noopener" href="https://fundresearch.fidelity.com/mutual-funds/summary/315911750">Research FXAIX</a></td><td><input id="fxprice" type="number" step=".01" oninput="autosave()"></td><td><input id="fxown" oninput="autosave()"></td><td><input id="fxnote" oninput="autosave()"></td></tr></table>
 <p><b>Which is most diversified? What evidence supports your answer?</b></p><textarea id="divanswer" oninput="autosave()"></textarea></div>
 
-<div class="card"><div class="step">Fractional shares</div><h2>You have only $100</h2>
+<div class="card lessonSection lessonLocked"><div class="step">Fractional shares</div><h2>You have only $100</h2>
 <p>Look at the COST price you recorded. Can $100 buy one full share?</p><select id="fullshare" onchange="autosave()"><option></option><option>No</option><option>Yes</option></select>
 <div class="callout"><b>Fractional share:</b> part of one full share. Some brokerages allow eligible investments to be purchased by dollar amount rather than requiring a whole share.</div>
 <div class="note"><b>Calculate it:</b> $100 ÷ today's COST share price = fraction of one share you could buy.</div>
@@ -93,7 +94,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <p>What did clicking <b>Preview Order</b> let you check before placing the order?</p><textarea id="previewreflection" oninput="autosave()"></textarea>
 <p>After placing an order, what changed in your practice portfolio?</p><textarea id="portreflection" oninput="autosave()"></textarea></div>
 
-<div class="card"><div class="step">Step 6</div><h2>What happens after you buy?</h2>
+<div class="card lessonSection lessonLocked"><div class="step">Step 6</div><h2>What happens after you buy?</h2>
 <p>Investing is not finished after the first purchase. Use these four terms to identify what each investor is doing.</p>
 <div class="grid2">
 <div class="callout"><b>Dollar-cost averaging:</b> investing the same dollar amount on a regular schedule, whether prices are up or down.</div>
@@ -108,7 +109,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <tr><td>Marcus wants one diversified retirement fund that gradually becomes more conservative as retirement approaches.</td><td><select id="hab4" onchange="autosave()"><option></option><option>Dollar-cost averaging</option><option>Dividend reinvestment</option><option>Rebalancing</option><option>Target-date fund</option></select></td></tr></table>
 <button onclick="checkHabits()">Check all four</button><div id="habfb" class="feedback"></div></div>
 
-<div class="card"><div class="step">Job benefits</div><h2>Pension + vesting: why timing matters</h2>
+<div class="card lessonSection lessonLocked"><div class="step">Job benefits</div><h2>Pension + vesting: why timing matters</h2>
 <div class="callout"><b>Pension:</b> a retirement benefit in which an employer's plan promises retirement income according to the plan's rules, often based on salary and years of service.</div>
 <p>Jordan and Taylor both earn <b>$60,000</b> and both personally contribute <b>$3,600 per year</b> toward retirement. Taylor has no pension. Jordan has this <b>fictional classroom pension</b>:</p>
 <div class="note"><b>Formula:</b> 1.5% × years of service × final average salary. <b>Vesting:</b> Jordan must complete 10 years to earn a pension benefit under this fictional plan.</div>
@@ -119,7 +120,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <div class="callout"><b>Vesting:</b> earning the right to receive an employer-provided benefit or full ownership of certain employer contributions according to the plan's rules. Actual plans vary.</div>
 <button onclick="checkVesting()">Check the numbers</button><div id="vestfb" class="feedback"></div></div>
 
-<div class="card"><div class="step">Exit</div><h2>Explain the real process</h2>
+<div class="card lessonSection lessonLocked"><div class="step">Exit</div><h2>Explain the real process</h2>
 <p>In 4–5 sentences, explain what a teenager and parent/guardian would actually need to do to begin investing. Correctly use: <b>emergency fund, brokerage, account, investment, research, buy</b>.</p>
 <textarea id="exit" oninput="markReviewStale();autosave()"></textarea>
 <p><b>Final check:</b> “I moved $100 into my brokerage account, so I am invested.” Correct or incorrect? Explain.</p>
@@ -204,10 +205,12 @@ function autosave(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(saveNow,700);
 }
+function setLessonLocked(locked){document.querySelectorAll(".lessonSection").forEach(el=>el.classList.toggle("lessonLocked",!!locked));if(!locked&&typeof renderReview==="function")renderReview();}
 function loadStudent(){
   const code=cleanCode($("sid").value);
   if(!code){$("idmsg").textContent=" Enter a class code first.";return}
   $("sid").value=code; activeCode=code; localStorage.setItem("u3d5_last_code",code);
+  setLessonLocked(false);
   $("idmsg").textContent=" Loading…";
   const backup=localLoad(code);
   if(backup) applyState(backup);
@@ -377,6 +380,7 @@ function downloadPdf(){
 
 window.addEventListener("beforeunload",()=>localSave());
 window.addEventListener("load",()=>{
+  setLessonLocked(true);
   const last=localStorage.getItem("u3d5_last_code");
   if(last){$("sid").value=last;loadStudent()} else {renderReview()}
 });

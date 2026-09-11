@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 5 — How Do I Actually Start Investing?</title>
+<style>
+:root{--navy:#12375a;--blue:#0b5d91;--lt:#eef6fb;--green:#e7f6eb;--gold:#fff4cf;--ink:#172536;--red:#fff0ef;--gray:#f3f5f7}
+*{box-sizing:border-box}body{margin:0;background:var(--gray);font-family:Arial,sans-serif;color:var(--ink);line-height:1.45}
+header{background:var(--navy);color:#fff;padding:22px 18px}header .wrap,main{max-width:980px;margin:auto}h1{margin:0;font-size:30px}header p{margin:6px 0 0}
+main{padding:18px}.card{background:#fff;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 2px 10px #0001}.step{font-size:13px;font-weight:800;color:var(--blue);letter-spacing:.08em;text-transform:uppercase}
+h2{margin:4px 0 10px}.note,.callout{padding:13px;border-radius:9px;margin:12px 0}.note{background:var(--gold);border-left:5px solid #c89000}.callout{background:var(--lt);border-left:5px solid var(--blue)}
+.practice{border:3px solid var(--navy);background:#fbfdff}.practicehead{background:var(--navy);color:#fff;padding:14px;border-radius:9px;margin-bottom:15px}.practicehead h2{margin:0;color:#fff}.practicehead p{margin:4px 0 0}
+button,.btn{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer;text-decoration:none;margin:4px 4px 4px 0}.btn.out{background:#fff;color:var(--blue);border:2px solid var(--blue)}button:disabled{opacity:.45;cursor:not-allowed}
+input,textarea,select{width:100%;padding:9px;font-size:16px;border:1px solid #b9c4cf;border-radius:7px}textarea{min-height:80px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #c8d2dc;padding:8px;vertical-align:top}th{background:#dcecf7}
+.choice{border:2px solid #d6dde4;border-radius:9px;padding:10px;margin:8px 0;cursor:pointer}.choice.selected{border-color:var(--blue);background:var(--lt)}
+.feedback{display:none;padding:11px;border-radius:8px;margin-top:10px}.good{background:var(--green)}.warn{background:var(--red)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.money{font-size:25px;font-weight:800;color:var(--navy)}.small{font-size:12px;color:#5c6875}
+.progress{position:sticky;top:0;z-index:3;background:#fff;border-bottom:1px solid #ddd;padding:8px;text-align:center;font-weight:700;color:var(--blue)}
+.reviewbox{background:#f7fbff;border:2px solid var(--blue);border-radius:10px;padding:14px;margin-top:14px}
+.scorepill{display:inline-block;background:var(--navy);color:#fff;border-radius:999px;padding:6px 11px;font-weight:800}
+#pdfBtn:disabled{background:#9aa6b2;color:#eef1f4;opacity:1;cursor:not-allowed}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+</style></head>
+<body><header><div class="wrap"><h1>How Do I Actually Start Investing?</h1><p>SAFETY → ACCOUNT → BROKERAGE → FUND → RESEARCH → PREVIEW → BUY → KEEP GOING</p></div></header>
+<div class="progress">Classroom practice only • no real account • no real money • no personal financial information</div><main>
+
+<div class="card"><div class="step">Start</div><h2>Class code</h2><p>Enter your teacher-assigned pseudonym/code. Do not enter your real name.</p>
+<input id="sid" maxlength="30" placeholder="Class code"><button onclick="loadStudent()">Load / Start</button><span id="idmsg" class="small"></span></div>
+
+<div class="card"><div class="step">Step 0</div><h2>Build financial safety first</h2>
+<div class="callout"><b>Emergency fund:</b> money set aside for unexpected expenses. It should be safe and easy to access.</div>
+<p>You are 16 and have $500 from a summer job. Why is keeping some money in an emergency fund recommended before investing all $500?</p>
+<div class="choice" onclick="pick(this,'emfb',false)">Investments always lose money in the short term.</div>
+<div class="choice" onclick="pick(this,'emfb',true)">You may need cash soon, and selling an investment during a market drop could lock in a loss.</div>
+<div class="choice" onclick="pick(this,'emfb',false)">Emergency funds always earn more than investments.</div><div id="emfb" class="feedback"></div>
+<p><b>Liquidity</b> = how quickly/easily something can become usable cash without a major loss in value. Which is generally more liquid?</p>
+<select id="liq" onchange="autosave()"><option></option><option>Cash in a savings account</option><option>A house</option></select></div>
+
+<div class="card"><div class="step">Step 1</div><h2>What is a brokerage?</h2>
+<div class="callout"><b>Brokerage:</b> a company that provides an account and the tools/access needed to buy, sell, and hold investments.</div>
+<p>You generally do not send your money directly to a company every time you want to buy a share. A brokerage connects investors to markets and keeps track of the investments held in the account.</p>
+<div class="grid2"><div class="callout"><b>ACCOUNT = container</b><br>Brokerage account, 401(k), IRA/Roth IRA</div><div class="callout"><b>INVESTMENT = contents</b><br>Stock, bond, ETF, mutual fund</div></div>
+<p>Because you are under 18, an adult generally needs to be involved. The exact teen/custodial structure depends on the brokerage.</p></div>
+
+<div class="card"><div class="step">Step 2</div><h2>Real brokerage website field trip</h2>
+<div class="note"><b>Sample, not endorsement:</b> The class is using Robinhood's public website as one easy-to-follow example of what a brokerage offers. This is <b>not</b> a recommendation of Robinhood over Fidelity, Schwab, Vanguard, E*TRADE, Merrill, or any other brokerage.</div>
+<a class="btn" target="_blank" rel="noopener" href="https://robinhood.com/us/en/invest/">Open the sample brokerage page</a>
+<p>Spend about 5–7 minutes exploring. Return here and record what you find.</p>
+<table><tr><th>Find this</th><th>Your notes</th></tr>
+<tr><td>Two investments/assets customers can access</td><td><input id="rh1" oninput="autosave()"></td></tr>
+<tr><td>One account, portfolio, or investing service</td><td><input id="rh2" oninput="autosave()"></td></tr>
+<tr><td>What does the site say about fractional shares?</td><td><input id="rh3" oninput="autosave()"></td></tr>
+<tr><td>What does it say about recurring investing?</td><td><input id="rh4" oninput="autosave()"></td></tr>
+<tr><td>One support/research/education feature</td><td><input id="rh5" oninput="autosave()"></td></tr>
+<tr><td>One service you did not know brokerages might offer</td><td><input id="rh6" oninput="autosave()"></td></tr></table>
+<p><b>So what does a brokerage actually do for an investor?</b></p><textarea id="rhsyn" oninput="autosave()"></textarea></div>
+
+<div class="card"><div class="step">Step 3</div><h2>Fund the account</h2>
+<p>You transfer money from checking into a brokerage account. Are you invested yet?</p>
+<button onclick="fund(false)">Yes</button><button onclick="fund(true)">No</button><div id="fundfb" class="feedback"></div></div>
+
+<div class="card"><div class="step">Steps 4–5</div><h2>Research three real investments</h2>
+<p>Use the live pages. Record what you see <b>today</b>; market prices change.</p>
+<table><tr><th>Investment</th><th>Live research</th><th>Current price / NAV</th><th>What do you own?</th><th>Diversification / fee note</th></tr>
+<tr><td><b>COST</b><br>Costco stock</td><td><a class="btn out" target="_blank" rel="noopener" href="https://digital.fidelity.com/prgw/digital/research/quote/dashboard/summary?symbol=COST">Research COST</a></td><td><input id="costprice" type="number" step=".01" oninput="calcFraction();autosave()"></td><td><input id="costown" oninput="autosave()"></td><td><input id="costnote" oninput="autosave()"></td></tr>
+<tr><td><b>VTI</b><br>Total Stock Market ETF</td><td><a class="btn out" target="_blank" rel="noopener" href="https://advisors.vanguard.com/investments/products/vti/vanguard-total-stock-market-etf">Research VTI</a></td><td><input id="vtiprice" type="number" step=".01" oninput="autosave()"></td><td><input id="vtiown" oninput="autosave()"></td><td><input id="vtinote" oninput="autosave()"></td></tr>
+<tr><td><b>FXAIX</b><br>Fidelity 500 Index Fund</td><td><a class="btn out" target="_blank" rel="noopener" href="https://fundresearch.fidelity.com/mutual-funds/summary/315911750">Research FXAIX</a></td><td><input id="fxprice" type="number" step=".01" oninput="autosave()"></td><td><input id="fxown" oninput="autosave()"></td><td><input id="fxnote" oninput="autosave()"></td></tr></table>
+<p><b>Which is most diversified? What evidence supports your answer?</b></p><textarea id="divanswer" oninput="autosave()"></textarea></div>
+
+<div class="card"><div class="step">Fractional shares</div><h2>You have only $100</h2>
+<p>Look at the COST price you recorded. Can $100 buy one full share?</p><select id="fullshare" onchange="autosave()"><option></option><option>No</option><option>Yes</option></select>
+<div class="callout"><b>Fractional share:</b> part of one full share. Some brokerages allow eligible investments to be purchased by dollar amount rather than requiring a whole share.</div>
+<div id="fracout" class="callout">Enter today's COST price above to calculate what fraction $100 could buy.</div></div>
+
+<div class="card practice"><div class="practicehead"><h2>CLASSROOM PRACTICE BROKERAGE</h2><p>NOT A REAL FINANCIAL ACCOUNT • FICTIONAL CASH ONLY</p></div>
+<div class="grid2"><div><b>Available fictional cash</b><div class="money" id="cash">$1,000.00</div></div><div><b>Goal</b><p>Practice the mechanics: research → enter order → preview → place practice order → portfolio updates.</p></div></div>
+<hr>
+<h3>New Practice Order</h3>
+<label>Investment</label><select id="tradeSymbol" onchange="syncPrice()"><option value="">Choose...</option><option value="COST">COST — individual stock</option><option value="VTI">VTI — ETF</option><option value="FXAIX">FXAIX — mutual fund</option></select>
+<label>Current price / NAV</label><input id="tradePrice" type="number" step=".01" placeholder="Pulled from the research value you entered above">
+<label>Action</label><select id="tradeAction"><option>BUY</option></select>
+<label>Dollar amount to invest</label><input id="tradeAmount" type="number" step=".01" value="100">
+<button onclick="previewOrder()">Preview Order</button>
+<div id="preview" class="callout" style="display:none"></div>
+<button id="placeBtn" onclick="placeOrder()" disabled>Place Practice Order</button>
+<button class="btn out" onclick="resetPortfolio()">Reset Practice Portfolio</button>
+<h3>Practice Portfolio</h3>
+<table><thead><tr><th>Investment</th><th>Type</th><th>Amount invested</th><th>Estimated shares</th></tr></thead><tbody id="portfolio"></tbody></table>
+<p><b>Cash remaining:</b> <span id="cash2">$1,000.00</span></p>
+<div class="note"><b>Required:</b> Place a $100 practice order for COST and a $100 practice order for VTI. If your teacher directs and time permits, also place a $100 FXAIX order.</div>
+<p>What did clicking <b>Preview Order</b> let you check before placing the order?</p><textarea id="previewreflection" oninput="autosave()"></textarea>
+<p>After placing an order, what changed in your practice portfolio?</p><textarea id="portreflection" oninput="autosave()"></textarea></div>
+
+<div class="card"><div class="step">Step 6</div><h2>What happens after you buy?</h2>
+<table><tr><th>Scenario</th><th>Habit</th></tr>
+<tr><td>Maya automatically invests $25 from every paycheck whether the market is up or down.</td><td><select id="hab1" onchange="autosave()"><option></option><option>Dollar-cost averaging</option><option>Dividend reinvestment</option><option>Rebalancing</option><option>Target-date fund</option></select></td></tr>
+<tr><td>Luis receives a $4 dividend and automatically uses it to buy more shares.</td><td><select id="hab2" onchange="autosave()"><option></option><option>Dollar-cost averaging</option><option>Dividend reinvestment</option><option>Rebalancing</option><option>Target-date fund</option></select></td></tr>
+<tr><td>Ava originally wanted about half stock funds and half bond funds. Stocks rise so much that her mix changes. She adjusts back toward her original plan.</td><td><select id="hab3" onchange="autosave()"><option></option><option>Dollar-cost averaging</option><option>Dividend reinvestment</option><option>Rebalancing</option><option>Target-date fund</option></select></td></tr>
+<tr><td>Marcus wants one diversified retirement fund that gradually becomes more conservative as retirement approaches.</td><td><select id="hab4" onchange="autosave()"><option></option><option>Dollar-cost averaging</option><option>Dividend reinvestment</option><option>Rebalancing</option><option>Target-date fund</option></select></td></tr></table>
+<button onclick="checkHabits()">Check all four</button><div id="habfb" class="feedback"></div></div>
+
+<div class="card"><div class="step">Job benefits</div><h2>Pension + vesting: why timing matters</h2>
+<div class="callout"><b>Pension:</b> a retirement benefit in which an employer's plan promises retirement income according to the plan's rules, often based on salary and years of service.</div>
+<p>Jordan and Taylor both earn <b>$60,000</b> and both personally contribute <b>$3,600 per year</b> toward retirement. Taylor has no pension. Jordan has this <b>fictional classroom pension</b>:</p>
+<div class="note"><b>Formula:</b> 1.5% × years of service × final average salary. <b>Vesting:</b> Jordan must complete 10 years to earn a pension benefit under this fictional plan.</div>
+<p><b>A.</b> Jordan leaves after 9 years. Is Jordan vested?</p><select id="vest9" onchange="autosave()"><option></option><option>No</option><option>Yes</option></select>
+<p>Pension from this fictional plan if Jordan leaves at 9 years:</p><input id="vest9amt" placeholder="$..." oninput="autosave()">
+<p><b>B.</b> Jordan completes 10 years. Calculate: 1.5% × 10 × $60,000 =</p><input id="pensioncalc" placeholder="$ per year" oninput="autosave()">
+<p>Taylor earns the same salary and contributes the same amount personally, but has no pension. What does this show about comparing two jobs?</p><textarea id="pensionlesson" oninput="autosave()"></textarea>
+<div class="callout"><b>Vesting:</b> earning the right to receive an employer-provided benefit or full ownership of certain employer contributions according to the plan's rules. Actual plans vary.</div>
+<button onclick="checkVesting()">Check the numbers</button><div id="vestfb" class="feedback"></div></div>
+
+<div class="card"><div class="step">Exit</div><h2>Explain the real process</h2>
+<p>In 4–5 sentences, explain what a teenager and parent/guardian would actually need to do to begin investing. Correctly use: <b>emergency fund, brokerage, account, investment, research, buy</b>.</p>
+<textarea id="exit" oninput="markReviewStale();autosave()"></textarea>
+<p><b>Final check:</b> “I moved $100 into my brokerage account, so I am invested.” Correct or incorrect? Explain.</p>
+<textarea id="exit2" oninput="markReviewStale();autosave()"></textarea>
+
+<div class="reviewbox">
+<h3>Submit for Review</h3>
+<p>The AI coach will check whether your final explanation accurately explains the process and uses the required ideas in context. It will give brief feedback; it will not change your answers.</p>
+<button type="button" id="reviewBtn" onclick="submitForReview()">Submit for Review</button>
+<span id="reviewStatus" class="small"></span>
+<div id="reviewResult" style="display:none;margin-top:12px"></div>
+</div>
+
+<p><button type="button" onclick="saveNow()">Save Now</button>
+<button type="button" id="pdfBtn" onclick="downloadPdf()" disabled>Save as PDF</button></p>
+<p id="pdfNote" class="small"><b>Save as PDF is locked until Submit for Review is completed.</b></p>
+<p id="savemsg" class="small">Your work autosaves to the class tool after you enter your class code. A local backup is also kept on this device.</p></div>
+</main>
+<script>
+const FIELDS=["liq","rh1","rh2","rh3","rh4","rh5","rh6","rhsyn","costprice","costown","costnote","vtiprice","vtiown","vtinote","fxprice","fxown","fxnote","divanswer","fullshare","previewreflection","portreflection","hab1","hab2","hab3","hab4","vest9","vest9amt","pensioncalc","pensionlesson","exit","exit2"];
+const $=id=>document.getElementById(id);
+let trades=[], available=1000, previewData=null, saveTimer=null, activeCode="", reviewData=null, reviewFingerprint="";
+
+function cleanCode(v){return (v||"").trim().toUpperCase().replace(/[^A-Z0-9_-]/g,"").slice(0,30)}
+function localKey(code){return "u3d5_server_"+code}
+function collectState(){
+  const data={available,trades,reviewData,reviewFingerprint};
+  FIELDS.forEach(id=>data[id]=$(id).value);
+  return data;
+}
+function applyState(data){
+  data=data||{};
+  FIELDS.forEach(id=>{if(data[id]!==undefined && data[id]!==null) $(id).value=data[id]});
+  trades=Array.isArray(data.trades)?data.trades:[];
+  available=Number.isFinite(Number(data.available))?Number(data.available):1000;
+  reviewData=data.reviewData||null; reviewFingerprint=data.reviewFingerprint||"";
+  calcFraction(); renderPortfolio(); renderReview();
+}
+function setStatus(msg,kind=""){
+  $("savemsg").textContent=msg;
+  $("savemsg").style.color=kind==="bad"?"#a12622":kind==="good"?"#176b34":"#5c6875";
+}
+function hasServer(){return typeof google!=="undefined" && google.script && google.script.run}
+function localSave(){
+  if(!activeCode) return;
+  localStorage.setItem(localKey(activeCode),JSON.stringify(collectState()));
+  localStorage.setItem("u3d5_last_code",activeCode);
+}
+function localLoad(code){
+  try{return JSON.parse(localStorage.getItem(localKey(code))||"null")}catch(e){return null}
+}
+function saveNow(){
+  if(!activeCode){setStatus("Enter your class code at the top and click Load / Start to turn on autosave.","bad");return}
+  localSave();
+  const payload=collectState();
+  if(!hasServer()){setStatus("Saved local backup on this device. Server save is available after deployment in Google Apps Script.","good");return}
+  setStatus("Saving…");
+  google.script.run
+    .withSuccessHandler(r=>{
+      if(r && r.ok) setStatus("Saved to class tool at "+(r.savedAt||"just now")+".","good");
+      else setStatus("Local backup saved, but class-tool save failed. Try Save Now again.","bad");
+    })
+    .withFailureHandler(()=>setStatus("Local backup saved, but class-tool save failed. Try Save Now again.","bad"))
+    .saveState(activeCode,payload);
+}
+function autosave(){
+  if(!activeCode) return;
+  localSave(); // immediate safety backup
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveNow,700);
+}
+function loadStudent(){
+  const code=cleanCode($("sid").value);
+  if(!code){$("idmsg").textContent=" Enter a class code first.";return}
+  $("sid").value=code; activeCode=code; localStorage.setItem("u3d5_last_code",code);
+  $("idmsg").textContent=" Loading…";
+  const backup=localLoad(code);
+  if(backup) applyState(backup);
+  if(!hasServer()){
+    $("idmsg").textContent=backup?" Loaded local backup.":" Started. Autosave is on.";
+    setStatus("Local backup is active. When deployed through Apps Script, work will also save to the class sheet.","good");
+    return;
+  }
+  google.script.run
+    .withSuccessHandler(r=>{
+      if(r && r.ok && r.found && r.state){applyState(r.state); localSave(); $("idmsg").textContent=" Loaded saved work."; setStatus("Saved work retrieved from the class tool.","good")}
+      else { $("idmsg").textContent=backup?" Loaded local backup.":" New student record started."; saveNow(); }
+    })
+    .withFailureHandler(()=>{$("idmsg").textContent=backup?" Loaded local backup; server unavailable.":" Server unavailable; local backup active.";setStatus("Keep working. A local backup is active; use Save Now before leaving.","bad")})
+    .loadState(code);
+}
+function pick(el,id,ok){
+  [...el.parentNode.querySelectorAll(".choice")].forEach(x=>x.classList.remove("selected"));el.classList.add("selected");
+  const f=$(id);f.style.display="block";f.className="feedback "+(ok?"good":"warn");
+  f.textContent=ok?"Correct. Emergency money needs to remain available so a short-term problem does not force a long-term investment sale.":"Try again. Focus on needing cash unexpectedly and what could happen if the market is down.";
+}
+function fund(ok){
+  const f=$("fundfb");f.style.display="block";f.className="feedback "+(ok?"good":"warn");
+  f.textContent=ok?"Correct. Funding puts cash into the account. You are not invested until you buy an investment.":"Not yet. Moving money into the brokerage account and purchasing an investment are separate steps.";
+}
+function calcFraction(){
+  const p=parseFloat($("costprice").value), out=$("fracout");
+  out.textContent=p>0?"$100 ÷ $"+p.toFixed(2)+" ≈ "+(100/p).toFixed(4)+" of one COST share.":"Enter today's COST price above to calculate what fraction $100 could buy.";
+}
+function syncPrice(){
+  const s=$("tradeSymbol").value, map={COST:$("costprice").value,VTI:$("vtiprice").value,FXAIX:$("fxprice").value};
+  $("tradePrice").value=map[s]||""; $("preview").style.display="none"; $("placeBtn").disabled=true; previewData=null;
+}
+function typeFor(s){return s==="COST"?"Stock":s==="VTI"?"ETF":"Mutual fund"}
+function previewOrder(){
+  const s=$("tradeSymbol").value,p=parseFloat($("tradePrice").value),a=parseFloat($("tradeAmount").value),pv=$("preview");
+  if(!s||!(p>0)||!(a>0)){pv.style.display="block";pv.textContent="Choose an investment and enter a valid current price and dollar amount.";$("placeBtn").disabled=true;return}
+  if(a>available){pv.style.display="block";pv.textContent="Not enough fictional cash for this order.";$("placeBtn").disabled=true;return}
+  const sh=a/p; previewData={symbol:s,type:typeFor(s),price:p,amount:a,shares:sh};
+  pv.style.display="block";pv.innerHTML="<b>PREVIEW — not placed yet</b><br>BUY "+s+" • $"+a.toFixed(2)+" at about $"+p.toFixed(2)+" per share/NAV<br>Estimated shares: "+sh.toFixed(4)+"<br>Estimated cash after order: $"+(available-a).toFixed(2);
+  $("placeBtn").disabled=false;
+}
+function placeOrder(){
+  if(!previewData)return;
+  trades.push(previewData);available-=previewData.amount;previewData=null;$("placeBtn").disabled=true;
+  const pv=$("preview");pv.style.display="block";pv.innerHTML="<b>Practice order placed.</b> Your fictional portfolio has been updated.";
+  renderPortfolio();autosave();
+}
+function renderPortfolio(){
+  const body=$("portfolio");body.innerHTML="";
+  trades.forEach(t=>{const r=document.createElement("tr");r.innerHTML="<td>"+t.symbol+"</td><td>"+t.type+"</td><td>$"+Number(t.amount).toFixed(2)+"</td><td>"+Number(t.shares).toFixed(4)+"</td>";body.appendChild(r)});
+  $("cash").textContent="$"+available.toFixed(2);$("cash2").textContent="$"+available.toFixed(2);
+}
+function resetPortfolio(){
+  if(confirm("Reset the classroom practice portfolio to $1,000?")){trades=[];available=1000;renderPortfolio();autosave()}
+}
+function checkHabits(){
+  const a=[$("hab1").value,$("hab2").value,$("hab3").value,$("hab4").value],k=["Dollar-cost averaging","Dividend reinvestment","Rebalancing","Target-date fund"],bad=[];
+  a.forEach((v,i)=>{if(v!==k[i])bad.push(i+1)});
+  const f=$("habfb");f.style.display="block";f.className="feedback "+(bad.length?"warn":"good");f.textContent=bad.length?"Recheck scenario(s): "+bad.join(", ")+".":"All four are correct.";
+}
+function num(v){return parseFloat((v||"").replace(/[$,]/g,""))}
+function checkVesting(){
+  const ok=$("vest9").value==="No"&&num($("vest9amt").value)===0&&Math.abs(num($("pensioncalc").value)-9000)<1;
+  const f=$("vestfb");f.style.display="block";f.className="feedback "+(ok?"good":"warn");
+  f.textContent=ok?"Correct. In this fictional plan: 9 years = not vested = $0 pension; 10 years = vested and the simplified formula gives $9,000/year.":"Recheck: the fictional rule requires 10 years. Then calculate 0.015 × 10 × 60,000.";
+}
+
+function textVal(id){return ($(id).value||"").trim()}
+function finalFingerprint(){return textVal("exit")+"|||"+textVal("exit2")}
+function markReviewStale(){
+  if(reviewData && reviewFingerprint!==finalFingerprint()){
+    reviewData=null; reviewFingerprint="";
+    renderReview();
+  }
+}
+function completionInfo(){
+  const checks=[];
+  const add=(label,ok)=>checks.push({label,ok:!!ok});
+  add("Emergency fund / liquidity", textVal("liq")!=="");
+  add("Brokerage field trip", ["rh1","rh2","rh3","rh4","rh5","rh6","rhsyn"].every(id=>textVal(id)!==""));
+  add("COST research", ["costprice","costown","costnote"].every(id=>textVal(id)!==""));
+  add("VTI research", ["vtiprice","vtiown","vtinote"].every(id=>textVal(id)!==""));
+  add("FXAIX research", ["fxprice","fxown","fxnote"].every(id=>textVal(id)!==""));
+  add("Diversification response", textVal("divanswer")!=="");
+  add("Fractional-share question", textVal("fullshare")!=="");
+  add("Practice COST order", trades.some(t=>t.symbol==="COST"));
+  add("Practice VTI order", trades.some(t=>t.symbol==="VTI"));
+  add("Practice reflections", textVal("previewreflection")!=="" && textVal("portreflection")!=="");
+  add("After-you-buy scenarios", ["hab1","hab2","hab3","hab4"].every(id=>textVal(id)!==""));
+  add("Pension / vesting", ["vest9","vest9amt","pensioncalc","pensionlesson"].every(id=>textVal(id)!==""));
+  add("Final explanation", textVal("exit")!=="");
+  add("Final funded-vs-invested check", textVal("exit2")!=="");
+  add("AI review completed", !!reviewData && reviewFingerprint===finalFingerprint());
+  const done=checks.filter(x=>x.ok).length, total=checks.length;
+  return {done,total,percent:Math.round(done/total*100),checks};
+}
+function renderReview(){
+  const valid=!!reviewData && reviewFingerprint===finalFingerprint();
+  $("pdfBtn").disabled=!valid;
+  $("pdfNote").innerHTML=valid?"<b>PDF unlocked.</b> Your AI review will be included.":"<b>Save as PDF is locked until Submit for Review is completed.</b>";
+  if(!valid){$("reviewResult").style.display="none"; return}
+  $("reviewResult").style.display="block";
+  $("reviewResult").innerHTML='<span class="scorepill">Review complete</span><p><b>AI feedback:</b> '+escapeHtml(reviewData.feedback||"Review completed.")+'</p>';
+}
+function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function submitForReview(){
+  if(!activeCode){$("reviewStatus").textContent=" Enter your class code and click Load / Start first.";return}
+  const finalText=textVal("exit"), checkText=textVal("exit2");
+  if(finalText.length<80 || checkText.length<20){
+    $("reviewStatus").textContent=" Complete both final responses before submitting for review.";return;
+  }
+  if(!hasServer()){$("reviewStatus").textContent=" AI review works in the deployed Apps Script version.";return}
+  $("reviewBtn").disabled=true; $("pdfBtn").disabled=true; $("reviewStatus").textContent=" Reviewing…";
+  google.script.run
+    .withSuccessHandler(r=>{
+      $("reviewBtn").disabled=false;
+      if(!r || !r.ok){$("reviewStatus").textContent=" Review could not be completed. Try again.";return}
+      reviewData={feedback:r.feedback||"Review completed.",reviewedAt:r.reviewedAt||""};
+      reviewFingerprint=finalFingerprint();
+      $("reviewStatus").textContent=" Review complete.";
+      renderReview(); saveNow();
+    })
+    .withFailureHandler(()=>{$("reviewBtn").disabled=false;$("reviewStatus").textContent=" Review could not be completed. Try again."})
+    .reviewFinal(activeCode,{finalExplanation:finalText,fundedCheck:checkText});
+}
+function pdfLines(){
+  const c=completionInfo(), lines=[];
+  lines.push("COMPLETION: "+c.percent+"% ("+c.done+" of "+c.total+" required components)");
+  lines.push("");
+  lines.push("Unit 3 Investing - Day 5");
+  lines.push("How Do I Actually Start Investing?");
+  lines.push("Student code: "+activeCode);
+  lines.push("");
+  lines.push("FINAL EXPLANATION");
+  lines.push(textVal("exit"));
+  lines.push("");
+  lines.push("FUNDED VS. INVESTED CHECK");
+  lines.push(textVal("exit2"));
+  lines.push("");
+  lines.push("AI REVIEW FEEDBACK");
+  lines.push(reviewData && reviewData.feedback ? reviewData.feedback : "No review feedback available.");
+  lines.push("");
+  lines.push("PRACTICE PORTFOLIO");
+  lines.push("Starting fictional cash: $1,000.00");
+  trades.forEach(t=>lines.push(t.symbol+" | "+t.type+" | $"+Number(t.amount).toFixed(2)+" invested | "+Number(t.shares).toFixed(4)+" estimated shares"));
+  lines.push("Cash remaining: $"+available.toFixed(2));
+  lines.push("");
+  lines.push("COMPLETION DETAILS");
+  c.checks.forEach(x=>lines.push((x.ok?"[Complete] ":"[Incomplete] ")+x.label));
+  return {lines,completion:c};
+}
+function downloadPdf(){
+  if($("pdfBtn").disabled || !reviewData || reviewFingerprint!==finalFingerprint()) return;
+  if(!hasServer()){alert("PDF download works in the deployed Apps Script version.");return}
+  $("pdfBtn").disabled=true; $("pdfNote").textContent="Building PDF…";
+  const report=pdfLines();
+  google.script.run
+    .withSuccessHandler(r=>{
+      renderReview();
+      if(!r || !r.ok || !r.base64){alert("PDF could not be created. Please try again.");return}
+      const a=document.createElement("a");
+      a.href="data:application/pdf;base64,"+r.base64;
+      a.download=r.filename||("Unit3-Day5-"+activeCode+".pdf");
+      document.body.appendChild(a);a.click();a.remove();
+    })
+    .withFailureHandler(()=>{renderReview();alert("PDF could not be created. Please try again.")})
+    .buildPdf(activeCode,report);
+}
+
+window.addEventListener("beforeunload",()=>localSave());
+window.addEventListener("load",()=>{
+  const last=localStorage.getItem("u3d5_last_code");
+  if(last){$("sid").value=last;loadStudent()} else {renderReview()}
+});
+</script></body></html>

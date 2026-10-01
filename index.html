@@ -160,8 +160,8 @@ function applyState(data){
   FIELDS.forEach(id=>{if(data[id]!==undefined && data[id]!==null) $(id).value=data[id]});
   trades=Array.isArray(data.trades)?data.trades:[];
   available=Number.isFinite(Number(data.available))?Number(data.available):1000;
-  reviewData=data.reviewData||null; reviewFingerprint=data.reviewFingerprint||"";
-  calcFraction(); renderPortfolio(); renderReview();
+
+  calcFraction(); renderPortfolio();
 }
 function setStatus(msg,kind=""){
   $("savemsg").textContent=msg;
@@ -212,7 +212,7 @@ function setLessonLocked(locked){document.querySelectorAll(".lessonSection").for
 function loadStudent(){
   const code=cleanCode($("sid").value);
   if(!code){$("idmsg").textContent=" Enter a class code first.";return}
-  $("sid").value=code; activeCode=code; localStorage.setItem("u3d5_last_code",code);
+  $("sid").value=code; activeCode=code; localStorage.setItem("u3d5_last_code",code);\n  $("sid").disabled=true; $("startBtn").style.display="none"; $("changeIdBtn").style.display="inline-block";
   setLessonLocked(false);
   $("idmsg").textContent=" Loading…";
   const backup=localLoad(code);

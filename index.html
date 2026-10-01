@@ -25,7 +25,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 
 <div class="card"><div class="step">Start</div><h2>Class code</h2><p>Enter your teacher-assigned pseudonym/code. Do not enter your real name.</p>
 <div class="note"><b>Start here:</b> Enter your class code and click <b>Load / Start</b>. The rest of the assignment will unlock only after your student record is started.</div>
-<input id="sid" maxlength="30" placeholder="Class code"><button onclick="loadStudent()">Load / Start</button><span id="idmsg" class="small"></span></div>
+<input id="sid" maxlength="30" placeholder="Class code"><button id="startBtn" onclick="loadStudent()">Load / Start</button><button id="changeIdBtn" class="btn out" onclick="changeStudent()" style="display:none">Change student code</button><span id="idmsg" class="small"></span></div>
 
 <div class="card lessonSection lessonLocked"><div class="step">Step 0</div><h2>Build financial safety first</h2>
 <div class="callout"><b>Emergency fund:</b> money set aside for unexpected expenses. It should be safe and easy to access.</div>
@@ -75,7 +75,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <input id="fracwork" placeholder="Example: 100 ÷ 950 = 0.1053 share" oninput="autosave()">
 <div id="fracout" class="callout">Enter today's COST price above to calculate what fraction $100 could buy.</div></div>
 
-<div class="card practice"><div class="practicehead"><h2>CLASSROOM PRACTICE BROKERAGE</h2><p>NOT A REAL FINANCIAL ACCOUNT • FICTIONAL CASH ONLY</p></div>
+<div class="card practice lessonSection lessonLocked"><div class="practicehead"><h2>CLASSROOM PRACTICE BROKERAGE</h2><p>NOT A REAL FINANCIAL ACCOUNT • FICTIONAL CASH ONLY</p></div>
 <div class="grid2"><div><b>Available fictional cash</b><div class="money" id="cash">$1,000.00</div></div><div><b>Goal</b><p>Practice the mechanics: research → enter order → preview → place practice order → portfolio updates.</p></div></div>
 <hr>
 <h3>New Practice Order</h3>
@@ -127,28 +127,31 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <textarea id="exit2" oninput="markReviewStale();autosave()"></textarea>
 
 <div class="reviewbox">
-<h3>Submit for Review</h3>
-<p>The AI coach will check whether your final explanation accurately explains the process and uses the required ideas in context. It will give brief feedback; it will not change your answers.</p><p class="small"><b>Teacher test note:</b> if review fails, the message beside the button will now show the actual backend error so setup problems can be identified.</p>
-<button type="button" id="reviewBtn" onclick="submitForReview()">Submit for Review</button>
-<span id="reviewStatus" class="small"></span>
-<div id="reviewResult" style="display:none;margin-top:12px"></div>
+<h3>Finish &amp; export</h3>
+<p>There is no AI review. Use <b>Check completion</b> to make sure the required parts are filled in. When everything is complete, the normal PDF button unlocks.</p>
+<button type="button" onclick="checkCompletion()">Check completion</button>
+<span id="completionStatus" class="small"></span>
 </div>
 
 <p><button type="button" onclick="saveNow()">Save Now</button>
 <button type="button" id="pdfBtn" onclick="downloadPdf()" disabled>Save as PDF</button></p>
-<p id="pdfNote" class="small"><b>Save as PDF is locked until Submit for Review is completed.</b></p>
+<p id="pdfNote" class="small"><b>Save as PDF unlocks after the required work is complete.</b></p>
+<details style="margin-top:14px"><summary><b>Emergency PDF / teacher override</b></summary>
+<p class="small">If saving, completion checking, or another part of the tool is malfunctioning, use this escape hatch. It creates the same printable report without requiring completion. In the print window, choose <b>Save as PDF</b>.</p>
+<button type="button" class="btn out" onclick="emergencyPdf()">Emergency PDF</button>
+</details>
 <p id="savemsg" class="small">Your work autosaves to the class tool after you enter your class code. A local backup is also kept on this device.</p></div>
 </main>
 <script>
 const FIELDS=["liq","rh1","rh2","rh3","rh4","rh5","rh6","rhsyn","costprice","costown","costnote","vtiprice","vtiown","vtinote","fxprice","fxown","fxnote","divanswer","fullshare","fracwork","previewreflection","portreflection","hab1","hab2","hab3","hab4","vest9","vest9amt","pensioncalc","pensionlesson","exit","exit2"];
 const WEB_APP_URL="https://script.google.com/macros/s/AKfycbwfUWSHIgEATBA7l4DpHvE9O-5W0ps5fDy4cTpXBu2N_jNPRcwz_dFJa1hG9UBbgCU/exec";
 const $=id=>document.getElementById(id);
-let trades=[], available=1000, previewData=null, saveTimer=null, activeCode="", reviewData=null, reviewFingerprint="";
+let trades=[], available=1000, previewData=null, saveTimer=null, activeCode="";
 
 function cleanCode(v){return (v||"").trim().toUpperCase().replace(/[^A-Z0-9_-]/g,"").slice(0,30)}
 function localKey(code){return "u3d5_server_"+code}
 function collectState(){
-  const data={available,trades,reviewData,reviewFingerprint};
+  const data={available,trades};
   FIELDS.forEach(id=>data[id]=$(id).value);
   return data;
 }
@@ -157,8 +160,8 @@ function applyState(data){
   FIELDS.forEach(id=>{if(data[id]!==undefined && data[id]!==null) $(id).value=data[id]});
   trades=Array.isArray(data.trades)?data.trades:[];
   available=Number.isFinite(Number(data.available))?Number(data.available):1000;
-  reviewData=data.reviewData||null; reviewFingerprint=data.reviewFingerprint||"";
-  calcFraction(); renderPortfolio(); renderReview();
+
+  calcFraction(); renderPortfolio();
 }
 function setStatus(msg,kind=""){
   $("savemsg").textContent=msg;
@@ -205,11 +208,11 @@ function autosave(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(saveNow,700);
 }
-function setLessonLocked(locked){document.querySelectorAll(".lessonSection").forEach(el=>el.classList.toggle("lessonLocked",!!locked));if(!locked&&typeof renderReview==="function")renderReview();}
+function setLessonLocked(locked){document.querySelectorAll(".lessonSection").forEach(el=>el.classList.toggle("lessonLocked",!!locked));}
 function loadStudent(){
   const code=cleanCode($("sid").value);
   if(!code){$("idmsg").textContent=" Enter a class code first.";return}
-  $("sid").value=code; activeCode=code; localStorage.setItem("u3d5_last_code",code);
+  $("sid").value=code; activeCode=code; localStorage.setItem("u3d5_last_code",code);\n  $("sid").disabled=true; $("startBtn").style.display="none"; $("changeIdBtn").style.display="inline-block";
   setLessonLocked(false);
   $("idmsg").textContent=" Loading…";
   const backup=localLoad(code);
@@ -225,6 +228,17 @@ function loadStudent(){
       else { $("idmsg").textContent=backup?" Loaded local backup.":" New student record started."; saveNow(); }
     })
     .catch(()=>{$("idmsg").textContent=backup?" Loaded local backup; server unavailable.":" Server unavailable; local backup active.";setStatus("Keep working. A local backup is active; use Save Now before leaving.","bad")});
+}
+function changeStudent(){
+  localSave();
+  clearTimeout(saveTimer);
+  activeCode="";
+  $("sid").disabled=false; $("sid").value="";
+  $("startBtn").style.display="inline-block"; $("changeIdBtn").style.display="none";
+  $("idmsg").textContent=" Enter a different class code and click Load / Start.";
+  setLessonLocked(true);
+  setStatus("Autosave paused until a student code is loaded.");
+  $("sid").focus();
 }
 function pick(el,id,ok){
   [...el.parentNode.querySelectorAll(".choice")].forEach(x=>x.classList.remove("selected"));el.classList.add("selected");
@@ -279,13 +293,6 @@ function checkVesting(){
 }
 
 function textVal(id){return ($(id).value||"").trim()}
-function finalFingerprint(){return textVal("exit")+"|||"+textVal("exit2")}
-function markReviewStale(){
-  if(reviewData && reviewFingerprint!==finalFingerprint()){
-    reviewData=null; reviewFingerprint="";
-    renderReview();
-  }
-}
 function completionInfo(){
   const checks=[];
   const add=(label,ok)=>checks.push({label,ok:!!ok});
@@ -303,85 +310,54 @@ function completionInfo(){
   add("Pension / vesting", ["vest9","vest9amt","pensioncalc","pensionlesson"].every(id=>textVal(id)!==""));
   add("Final explanation", textVal("exit")!=="");
   add("Final funded-vs-invested check", textVal("exit2")!=="");
-  add("AI review completed", !!reviewData && reviewFingerprint===finalFingerprint());
   const done=checks.filter(x=>x.ok).length, total=checks.length;
   return {done,total,percent:Math.round(done/total*100),checks};
 }
-function renderReview(){
-  const valid=!!reviewData && reviewFingerprint===finalFingerprint();
-  $("pdfBtn").disabled=!valid;
-  $("pdfNote").innerHTML=valid?"<b>PDF unlocked.</b> Your AI review will be included.":"<b>Save as PDF is locked until Submit for Review is completed.</b>";
-  if(!valid){$("reviewResult").style.display="none"; return}
-  $("reviewResult").style.display="block";
-  $("reviewResult").innerHTML='<span class="scorepill">Review complete</span><p><b>AI feedback:</b> '+escapeHtml(reviewData.feedback||"Review completed.")+'</p>';
+function checkCompletion(){
+  const c=completionInfo(), missing=c.checks.filter(x=>!x.ok).map(x=>x.label);
+  const complete=c.done===c.total;
+  $("pdfBtn").disabled=!complete;
+  $("completionStatus").textContent=complete?" Complete — PDF unlocked.":" Still needed: "+missing.join("; ");
+  $("pdfNote").innerHTML=complete?"<b>PDF unlocked.</b> Save once more, then export.":"<b>Save as PDF unlocks after the required work is complete.</b>";
+  if(complete) saveNow();
 }
 function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function submitForReview(){
-  if(!activeCode){$("reviewStatus").textContent=" Enter your class code and click Load / Start first.";return}
-  const finalText=textVal("exit"), checkText=textVal("exit2");
-  if(finalText.length<80 || checkText.length<20){
-    $("reviewStatus").textContent=" Complete both final responses before submitting for review.";return;
-  }
-  if(!hasServer()){$("reviewStatus").textContent=" AI review works in the deployed Apps Script version.";return}
-  $("reviewBtn").disabled=true; $("pdfBtn").disabled=true; $("reviewStatus").textContent=" Reviewing…";
-  apiCall("review_final",{studentCode:activeCode,response:{finalExplanation:finalText,fundedCheck:checkText}})
-    .then(r=>{
-      $("reviewBtn").disabled=false;
-      if(!r || !r.ok){$("reviewStatus").textContent=" Review could not be completed. Try again.";return}
-      reviewData={feedback:r.feedback||"Review completed.",reviewedAt:r.reviewedAt||""};
-      reviewFingerprint=finalFingerprint();
-      $("reviewStatus").textContent=" Review complete.";
-      renderReview(); saveNow();
-    })
-    .catch(err=>{$("reviewBtn").disabled=false;$("reviewStatus").textContent=" Review could not be completed: "+(err&&err.message?err.message:"Unknown error");});
+function reportHtml(emergency){
+  const c=completionInfo();
+  const tradeRows=trades.length?trades.map(t=>"<tr><td>"+escapeHtml(t.symbol)+"</td><td>"+escapeHtml(t.type)+"</td><td>$"+Number(t.amount).toFixed(2)+"</td><td>"+Number(t.shares).toFixed(4)+"</td></tr>").join(""):"<tr><td colspan='4'>No practice orders recorded.</td></tr>";
+  const detailRows=c.checks.map(x=>"<tr><td>"+escapeHtml(x.label)+"</td><td>"+(x.ok?"Complete":"Incomplete")+"</td></tr>").join("");
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Investing Practice - ${escapeHtml(activeCode||"Emergency")}</title><style>body{font-family:Arial,sans-serif;color:#172536;margin:32px;line-height:1.4}h1,h2{color:#12375a}table{width:100%;border-collapse:collapse;margin:12px 0}th,td{border:1px solid #aaa;padding:7px;text-align:left;vertical-align:top}th{background:#eef6fb}.warn{padding:10px;background:#fff4cf;border-left:5px solid #c89000}@media print{button{display:none}}</style></head><body>
+  <h1>How Do I Actually Start Investing?</h1>
+  <p><b>Student code:</b> ${escapeHtml(activeCode||"Not loaded")}<br><b>Completion:</b> ${c.percent}% (${c.done} of ${c.total})</p>
+  ${emergency?"<p class='warn'><b>Emergency/override export:</b> This report was created with the emergency PDF option and may contain incomplete work.</p>":""}
+  <h2>Final explanation</h2><p>${escapeHtml(textVal("exit")).replace(/\n/g,"<br>")||"<i>No response.</i>"}</p>
+  <h2>Funded vs. invested check</h2><p>${escapeHtml(textVal("exit2")).replace(/\n/g,"<br>")||"<i>No response.</i>"}</p>
+  <h2>Practice portfolio</h2><table><tr><th>Investment</th><th>Type</th><th>Amount invested</th><th>Estimated shares</th></tr>${tradeRows}</table><p><b>Cash remaining:</b> $${available.toFixed(2)}</p>
+  <h2>Completion details</h2><table><tr><th>Component</th><th>Status</th></tr>${detailRows}</table>
+  <button onclick="window.print()">Print / Save as PDF</button>
+  <script>setTimeout(()=>window.print(),250)<\/script></body></html>`;
 }
-function pdfLines(){
-  const c=completionInfo(), lines=[];
-  lines.push("COMPLETION: "+c.percent+"% ("+c.done+" of "+c.total+" required components)");
-  lines.push("");
-  lines.push("Unit 3 Investing - Day 5");
-  lines.push("How Do I Actually Start Investing?");
-  lines.push("Student code: "+activeCode);
-  lines.push("");
-  lines.push("FINAL EXPLANATION");
-  lines.push(textVal("exit"));
-  lines.push("");
-  lines.push("FUNDED VS. INVESTED CHECK");
-  lines.push(textVal("exit2"));
-  lines.push("");
-  lines.push("AI REVIEW FEEDBACK");
-  lines.push(reviewData && reviewData.feedback ? reviewData.feedback : "No review feedback available.");
-  lines.push("");
-  lines.push("PRACTICE PORTFOLIO");
-  lines.push("Starting fictional cash: $1,000.00");
-  trades.forEach(t=>lines.push(t.symbol+" | "+t.type+" | $"+Number(t.amount).toFixed(2)+" invested | "+Number(t.shares).toFixed(4)+" estimated shares"));
-  lines.push("Cash remaining: $"+available.toFixed(2));
-  lines.push("");
-  lines.push("COMPLETION DETAILS");
-  c.checks.forEach(x=>lines.push((x.ok?"[Complete] ":"[Incomplete] ")+x.label));
-  return {lines,completion:c};
+function openPdfReport(emergency){
+  if(!activeCode && !emergency){alert("Load your student code first.");return}
+  localSave();
+  const w=window.open("","_blank");
+  if(!w){alert("The PDF window was blocked. Allow pop-ups for this site and try again.");return}
+  w.document.open(); w.document.write(reportHtml(emergency)); w.document.close();
 }
 function downloadPdf(){
-  if($("pdfBtn").disabled || !reviewData || reviewFingerprint!==finalFingerprint()) return;
-  if(!hasServer()){alert("PDF download works in the deployed Apps Script version.");return}
-  $("pdfBtn").disabled=true; $("pdfNote").textContent="Building PDF…";
-  const report=pdfLines();
-  apiCall("build_pdf",{studentCode:activeCode,report:report})
-    .then(r=>{
-      renderReview();
-      if(!r || !r.ok || !r.base64){alert("PDF could not be created. Please try again.");return}
-      const a=document.createElement("a");
-      a.href="data:application/pdf;base64,"+r.base64;
-      a.download=r.filename||("Unit3-Day5-"+activeCode+".pdf");
-      document.body.appendChild(a);a.click();a.remove();
-    })
-    .catch(()=>{renderReview();alert("PDF could not be created. Please try again.")});
+  const c=completionInfo();
+  if(c.done!==c.total){checkCompletion();return}
+  openPdfReport(false);
+}
+function emergencyPdf(){
+  if(!confirm("Use the emergency PDF override? This may export incomplete work.")) return;
+  openPdfReport(true);
 }
 
 window.addEventListener("beforeunload",()=>localSave());
 window.addEventListener("load",()=>{
   setLessonLocked(true);
   const last=localStorage.getItem("u3d5_last_code");
-  if(last){$("sid").value=last;loadStudent()} else {renderReview()}
+  if(last){$("sid").value=last;$("idmsg").textContent=" Previous code found on this device. Click Load / Start to resume."}
 });
 </script></body></html>
